@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: dubai_source
+    database: DUBAI_REAL_ESTATE
+    schema: STAGING
+    tables:
+      - name: BROKERS
+      - name: LANDS
+      - name: PROJECTS
+      - name: TRANSACTIONS
+      - name: VALUATIONS

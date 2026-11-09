@@ -1,5 +1,15 @@
-
-target/
-dbt_packages/
-logs/
+__pycache__/
+*.py[cod]
+venv/
 .env
+snowflake_layer/
+*.zip
+.DS_Store
+Thumbs.db
+
+# dbt credentials & compiled files
+profiles.yml
+target/
+logs/
+.user.yml
+.vscode/
