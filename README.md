@@ -1,15 +1,31 @@
-Welcome to your new dbt project!
+# Dubai Real Estate Data Pipeline: Snowflake to AWS S3 Serverless Lake
 
-### Using the starter project
+An end-to-end modern data engineering pipeline that models Dubai Land Department property transactions using **dbt** in **Snowflake**, and autonomously extracts Gold-layer business aggregates into an **Amazon S3** data lake using **AWS Lambda** and **Amazon EventBridge**.
 
-Try running the following commands:
-- dbt run
-- dbt test
+---
 
+## Architecture Overview
 
-### Resources:
-- Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
-- Check out [Discourse](https://discourse.getdbt.com/) for commonly asked questions and answers
-- Join the [chat](https://community.getdbt.com/) on Slack for live discussions and support
-- Find [dbt events](https://events.getdbt.com) near you
-- Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's development and best practices
+```text
++-----------------------+      dbt Core       +-----------------------------+
+| Raw Land Transactions |  ================>  | Snowflake Data Cloud        |
+| (Dubai Land Dept)     |   (Bronze->Silver)  |  - DB: DUBAI_REAL_ESTATE    |
++-----------------------+                     |  - Schema: GOLD             |
+                                              |  - Table: fct_property_sales|
+                                              +--------------+--------------+
+                                                             |
+                                                             | (Query Execution)
+                                                             v
++-----------------------+    Weekly Cron      +-----------------------------+
+| Amazon EventBridge    |  ---------------->  | AWS Lambda                  |
+| (Scheduler)           |    (Rule Trigger)   |  - Python 3.11 (x86_64)     |
++-----------------------+                     |  - Snowflake Connector Layer|
+                                              +--------------+--------------+
+                                                             |
+                                                             | (boto3 JSON PutObject)
+                                                             v
+                                              +-----------------------------+
+                                              | Amazon S3 (Data Lake)       |
+                                              |  - Bucket: Gold Summary     |
+                                              |  - Partition: weekly_summary|
+                                              +-----------------------------+
